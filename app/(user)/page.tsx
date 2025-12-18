@@ -1,12 +1,7 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { prisma } from '../lib/prisma';
-import { categories } from '../lib/constants/data';
-import type { Kitchen } from '../lib/generated/prisma/client';
+import { categories, kitchens } from '../../lib/constants/data';
 
-export default async function HomePage() {
-  const dbKitchens = await prisma.kitchen.findMany();
-
+export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
@@ -20,10 +15,10 @@ export default async function HomePage() {
               <button className="text-gray-600 hover:text-gray-900">
                 📍 Select Location
               </button>
-              <button className="bg-[#D70F64] text-white px-4 py-2 rounded-md hover:bg-[#B80D55] shadow-lg hover:shadow-xl transition-shadow">
+              <button className="bg-[#D70F64] text-white px-4 py-2 rounded-md hover:bg-[#B80D55]">
                 Login
               </button>
-              <button className="bg-[#D70F64] text-white px-4 py-2 rounded-md hover:bg-[#B80D55] shadow-lg hover:shadow-xl transition-shadow">
+              <button className="bg-[#D70F64] text-white px-4 py-2 rounded-md hover:bg-[#B80D55]">
                 Sign Up
               </button>
             </div>
@@ -43,7 +38,7 @@ export default async function HomePage() {
               <input
                 type="text"
                 placeholder="Enter your delivery address"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D70F64] focus:border-[#D70F64]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D70F64]"
               />
               <button className="w-full mt-3 bg-[#D70F64] text-white py-3 rounded-md hover:bg-[#B80D55]">
                 Find Food
@@ -55,14 +50,14 @@ export default async function HomePage() {
 
       {/* Categories */}
       <section className="py-8 px-4">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Categories</h2>
+        <h2 className="text-2xl font-bold mb-4">Categories</h2>
         <div className="flex space-x-4 overflow-x-auto pb-4">
           {categories.map((category) => (
             <div key={category.id} className="shrink-0 w-20 text-center">
               <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center">
-                <span className="text-2xl text-[#D70F64]">{category.icon}</span>
+                <span className="text-2xl">{category.icon}</span>
               </div>
-              <p className="text-sm text-gray-900 font-medium">{category.name}</p>
+              <p className="text-sm">{category.name}</p>
             </div>
           ))}
         </div>
@@ -70,24 +65,22 @@ export default async function HomePage() {
 
       {/* Featured Cloud Kitchens */}
       <section className="py-8 px-4">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Featured Cloud Kitchens</h2>
+        <h2 className="text-2xl font-bold mb-4">Featured Cloud Kitchens</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dbKitchens.map((kitchen: Kitchen) => (
-            <Link key={kitchen.id} href={`/kitchen/${kitchen.id}`}>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-4xl">{kitchen.logo || '🏪'}</span>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-900">{kitchen.name}</h3>
-                  <div className="flex items-center mb-2">
-                    <span className="text-[#D70F64]">⭐⭐⭐⭐⭐</span>
-                    <span className="ml-2 text-sm text-gray-600">4.5</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Estimated delivery: 25-35 min</p>
-                </div>
+          {kitchens.map((kitchen) => (
+            <div key={kitchen.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="h-48 bg-gray-200 flex items-center justify-center">
+                <span className="text-4xl">{kitchen.logo}</span>
               </div>
-            </Link>
+              <div className="p-4">
+                <h3 className="font-bold text-lg">{kitchen.name}</h3>
+                <div className="flex items-center mb-2">
+                  <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                  <span className="ml-2 text-sm text-gray-600">{kitchen.rating}</span>
+                </div>
+                <p className="text-sm text-gray-600">Estimated delivery: {kitchen.deliveryTime}</p>
+              </div>
+            </div>
           ))}
         </div>
       </section>
