@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { prisma } from '../../../../lib/prisma';
+import { getKitchenWithMenu } from '../../../../lib/data';
 import MenuGrid from './MenuGrid';
 import Link from 'next/link';
 
@@ -11,10 +11,7 @@ interface PageProps {
 export default async function KitchenPage({ params }: PageProps) {
   const { id } = await params;
 
-  const kitchen = await prisma.kitchen.findUnique({
-    where: { id },
-    include: { menuItems: true },
-  });
+  const kitchen = await getKitchenWithMenu(id);
 
   if (!kitchen) {
     notFound();

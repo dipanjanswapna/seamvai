@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { useRouter } from 'next/navigation';
+import { placeOrder } from '../../actions/order';
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, getTotal, getItemCount, clearCart } = useCartStore();
@@ -47,28 +48,19 @@ export default function CartPage() {
 
     setIsPlacingOrder(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-        return;
-      }
-
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ items }),
+      const result = await placeOrder({
+        items: items.map(item => ({
+          menuItemId: item.id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
       });
 
-      if (response.ok) {
-        const result = await response.json();
+      if (result.success) {
         clearCart();
         router.push(`/orders/success/${result.orderId}`);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to place order. Please try again.');
+        alert(result.error || 'Failed to place order. Please try again.');
       }
     } catch (error) {
       alert('An error occurred. Please try again.');

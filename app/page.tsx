@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { prisma } from '../lib/prisma';
+import { getKitchens } from '../lib/data';
 import { categories } from '../lib/constants/data';
 import type { Kitchen } from '../lib/generated/prisma/client';
 
 export default async function HomePage() {
-  const dbKitchens = await prisma.kitchen.findMany();
+  const dbKitchens = await getKitchens();
 
   return (
     <div className="min-h-screen bg-white">
